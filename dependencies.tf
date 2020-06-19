@@ -16,7 +16,7 @@ resource "azurerm_network_security_group" "engineering" {
   resource_group_name = azurerm_resource_group.engineering.name
 
   security_rule {
-    name              = "ssh_http"
+    name              = "standard_ports"
     priority          = 100
     direction         = "Inbound"
     access            = "Allow"
@@ -26,7 +26,9 @@ resource "azurerm_network_security_group" "engineering" {
       "22",
       "80",
       "443",
-      "3389"
+      "3389",
+      "5985",
+      "5986"
     ]
     source_address_prefix      = var.router_wan_ip
     destination_address_prefix = "*"
@@ -34,6 +36,7 @@ resource "azurerm_network_security_group" "engineering" {
 
   tags = {
     environment = "Engineering"
+    costcenter  = "IT"
   }
 }
 
@@ -47,34 +50,4 @@ resource "azurerm_subnet" "engineering" {
 resource "azurerm_subnet_network_security_group_association" "engineering" {
   subnet_id                 = azurerm_subnet.engineering.id
   network_security_group_id = azurerm_network_security_group.engineering.id
-}
-
-module "network-security-group" {
-  source              = "Azure/network-security-group/azurerm"
-  version             = "3.0.1"
-  security_group_name = "base-nsg"
-  resource_group_name = azurerm_resource_group.engineering.name
-  predefined_rules = [
-    {
-      name     = "WinRM"
-      priority = "500"
-    }
-  ]
-  custom_rules = [
-    {
-      name                   = "base"
-      priority               = "200"
-      direction              = "Inbound"
-      access                 = "Allow"
-      protocol               = "tcp"
-      destination_port_range = "22,80,443,3389"
-      source_address_prefix  = var.router_wan_ip
-      source_port_range      = "*"
-      description            = "standard ports"
-    }
-  ]
-  tags = {
-    environment = "engineering"
-    costcenter  = "it"
-  }
 }
