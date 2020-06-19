@@ -49,7 +49,7 @@ resource "azurerm_subnet" "engineering" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "engineering" {
-  count                = length(var.subnet_names)
+  count                     = length(var.subnet_names)
   subnet_id                 = azurerm_subnet.engineering[count.index].id
   network_security_group_id = azurerm_network_security_group.engineering.id
 }
