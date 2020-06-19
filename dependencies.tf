@@ -41,13 +41,15 @@ resource "azurerm_network_security_group" "engineering" {
 }
 
 resource "azurerm_subnet" "engineering" {
-  name                 = "default"
+  count                = length(var.subnet_names)
+  name                 = var.subnet_names[count.index]
   resource_group_name  = azurerm_resource_group.engineering.name
   virtual_network_name = azurerm_virtual_network.engineering.name
-  address_prefixes     = ["10.3.0.0/24"]
+  address_prefixes     = [var.subnet_prefixes[count.index]]
 }
 
 resource "azurerm_subnet_network_security_group_association" "engineering" {
-  subnet_id                 = azurerm_subnet.engineering.id
+  count                = length(var.subnet_names)
+  subnet_id                 = azurerm_subnet.engineering[count.index].id
   network_security_group_id = azurerm_network_security_group.engineering.id
 }
