@@ -48,3 +48,9 @@ resource "azurerm_subnet_network_security_group_association" "engineering" {
   subnet_id                 = azurerm_subnet.engineering.id
   network_security_group_id = azurerm_network_security_group.engineering.id
 }
+
+module "network-security-group" {
+  source  = "Azure/network-security-group/azurerm"
+  version = "3.0.1"
+  resource_group_name = azurerm_resource_group.engineering.name
+}
