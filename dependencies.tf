@@ -50,7 +50,24 @@ resource "azurerm_subnet_network_security_group_association" "engineering" {
 }
 
 module "network-security-group" {
-  source  = "Azure/network-security-group/azurerm"
-  version = "3.0.1"
+  source              = "Azure/network-security-group/azurerm"
+  version             = "3.0.1"
+  security_group_name = "base-nsg"
   resource_group_name = azurerm_resource_group.engineering.name
+  custom_rules = [
+    {
+      name                   = "base"
+      priority               = "200"
+      direction              = "Inbound"
+      access                 = "Allow"
+      protocol               = "tcp"
+      destination_port_range = "22,80,443,3389"
+      source_address_prefix  = var.router_wan_ip
+      description            = "standard ports"
+    }
+  ]
+  tags = {
+    environment = "engineering"
+    costcenter  = "it"
+  }
 }
