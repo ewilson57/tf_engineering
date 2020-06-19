@@ -54,6 +54,12 @@ module "network-security-group" {
   version             = "3.0.1"
   security_group_name = "base-nsg"
   resource_group_name = azurerm_resource_group.engineering.name
+  predefined_rules = [
+    {
+      name     = "WinRM"
+      priority = "500"
+    }
+  ]
   custom_rules = [
     {
       name                   = "base"
@@ -63,6 +69,7 @@ module "network-security-group" {
       protocol               = "tcp"
       destination_port_range = "22,80,443,3389"
       source_address_prefix  = var.router_wan_ip
+      source_port_range      = "*"
       description            = "standard ports"
     }
   ]
