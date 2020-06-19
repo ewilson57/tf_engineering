@@ -27,6 +27,13 @@ variable "subnet_names" {
   ]
 }
 
+variable "tags" {
+  default = {
+    environment = "Engineering"
+    costcenter  = "IT"
+  }
+}
+
 variable "router_wan_ip" {}
 variable "admin_username" {}
 variable "admin_password" {}

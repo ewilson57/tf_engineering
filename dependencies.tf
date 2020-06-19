@@ -1,6 +1,7 @@
 resource "azurerm_resource_group" "engineering" {
   name     = "${var.prefix}-rg"
   location = var.location
+  tags     = var.tags
 }
 
 resource "azurerm_virtual_network" "engineering" {
@@ -8,6 +9,7 @@ resource "azurerm_virtual_network" "engineering" {
   address_space       = ["10.3.0.0/16"]
   location            = azurerm_resource_group.engineering.location
   resource_group_name = azurerm_resource_group.engineering.name
+  tags                = var.tags
 }
 
 resource "azurerm_network_security_group" "engineering" {
@@ -34,10 +36,7 @@ resource "azurerm_network_security_group" "engineering" {
     destination_address_prefix = "*"
   }
 
-  tags = {
-    environment = "Engineering"
-    costcenter  = "IT"
-  }
+  tags = var.tags
 }
 
 resource "azurerm_subnet" "engineering" {
@@ -52,4 +51,24 @@ resource "azurerm_subnet_network_security_group_association" "engineering" {
   count                     = length(var.subnet_names)
   subnet_id                 = azurerm_subnet.engineering[count.index].id
   network_security_group_id = azurerm_network_security_group.engineering.id
+}
+
+resource "azurerm_availability_set" "linux-avset" {
+  name                         = "linux-avset"
+  resource_group_name          = azurerm_resource_group.engineering.name
+  location                     = azurerm_resource_group.engineering.location
+  platform_fault_domain_count  = 2
+  platform_update_domain_count = 3
+  managed                      = true
+  tags                         = var.tags
+}
+
+resource "azurerm_availability_set" "windows-avset" {
+  name                         = "windows-avset"
+  resource_group_name          = azurerm_resource_group.engineering.name
+  location                     = azurerm_resource_group.engineering.location
+  platform_fault_domain_count  = 2
+  platform_update_domain_count = 3
+  managed                      = true
+  tags                         = var.tags
 }
