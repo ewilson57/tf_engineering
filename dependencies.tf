@@ -72,3 +72,21 @@ resource "azurerm_availability_set" "windows-avset" {
   managed                      = true
   tags                         = var.tags
 }
+
+resource "azurerm_public_ip" "engineering_lb_pip" {
+  name                = "engineering_lb_pip"
+  resource_group_name = azurerm_resource_group.engineering.name
+  location            = azurerm_resource_group.engineering.location
+  allocation_method   = "Static"
+}
+
+resource "azurerm_lb" "engineering_lb" {
+  name                = "engineering_lb"
+  location            = azurerm_resource_group.engineering.location
+  resource_group_name = azurerm_resource_group.engineering.name
+
+  frontend_ip_configuration {
+    name                 = "engineering_lb_frontend"
+    public_ip_address_id = azurerm_public_ip.engineering_lb_pip.id
+  }
+}
