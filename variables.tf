@@ -34,8 +34,11 @@ variable "tags" {
   }
 }
 
+variable "arm_client_id" {}
+variable "arm_client_secret" {}
+variable "arm_tenant_id" {}
+variable "arm_subscription_id" {}
 variable "router_wan_ip" {}
 variable "admin_username" {}
 variable "admin_password" {}
 variable "ssh_key" {}
-
